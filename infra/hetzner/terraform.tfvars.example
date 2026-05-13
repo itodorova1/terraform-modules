@@ -1,0 +1,4 @@
+hcloud_token    = "your-hetzner-api-token"
+ssh_private_key = "-----BEGIN OPENSSH PRIVATE KEY-----\n..."
+ssh_public_key  = "ssh-ed25519 AAAA... user@host"
+allowed_ips     = ["YOUR.IP/32"]
