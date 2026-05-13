@@ -1,0 +1,33 @@
+name: Bootstrap MicroOS Snapshot
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.HETZNER_S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.HETZNER_S3_SECRET_ACCESS_KEY }}
+
+      - name: Create MicroOS Snapshot
+        run: |
+          terraform -chdir=.terraform/modules/kube-hetzner apply \
+            -target=null_resource.kube-hetzner-microos-snapshot \
+            -var="hcloud_token=$TF_VAR_hcloud_token" \
+            -auto-approve
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
